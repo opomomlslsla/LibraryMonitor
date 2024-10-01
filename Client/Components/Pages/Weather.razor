@@ -1,54 +1,40 @@
 ﻿@page "/weather"
 @attribute [StreamRendering]
 
-<PageTitle>Weather</PageTitle>
+@using Microsoft.AspNetCore.SignalR.Client;
+@using DTO;
 
-<h1>Weather</h1>
+<PageTitle>Home</PageTitle>
 
-<p>This component demonstrates showing data.</p>
+<h1> AvailableBooksCount: </h1>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-
+<p> @TotalCount </p>
 @code {
-    private WeatherForecast[]? forecasts;
+    private HubConnection? hubConnection;
+    List<BookDTO> books = new();
+    int TotalCount { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        
+        hubConnection = new HubConnectionBuilder()
+                            .WithUrl("http://localhost:5006/BooksInfoHub")
+                            .WithAutomaticReconnect()
+                            .Build();
+        hubConnection.On<LibraryData>("onRecieveStatistics", (str) =>
+        {
+            books.AddRange(str.Books);
+            Console.WriteLine(str);
+            UpdateTotalCount(str.TotalBooksCount);
+            ShouldRender();
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
     }
 
-    private class WeatherForecast
+    private void UpdateTotalCount(int val)
     {
-        public DateOnly Date { get; set; }
-        public int TemperatureC { get; set; }
-        public string? Summary { get; set; }
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        TotalCount = val;
     }
+
 }

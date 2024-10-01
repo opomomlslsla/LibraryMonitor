@@ -7,20 +7,12 @@
 
 <h1> AvailableBooksCount: </h1>
 
-<p> @bebra[0] | @bebra[1] </p>
-<p> @huebra.TotalBooksCount </p>
-
-@foreach(var s in books)
-{
-    <p> @s.Name </p>
-}
-Welcome to your new app.
-
+<p> @TotalCount </p>
 @code {
     private HubConnection? hubConnection;
-    private List<int> bebra = new(){0,0};
-    LibraryData huebra = new();
     List<BookDTO> books = new();
+    int TotalCount { get; set; }
+
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -29,15 +21,29 @@ Welcome to your new app.
                             .Build();
         hubConnection.On<LibraryData>("onRecieveStatistics", (str) =>
         {
-            bebra[0] = str.TotalBooksCount;
-            huebra = str;
             books.AddRange(str.Books);
             Console.WriteLine(str);
+            UpdateTotalCount(str.TotalBooksCount);
+            ShouldRender();
             InvokeAsync(StateHasChanged);
         });
 
         await hubConnection.StartAsync();
+    }
 
+    private void UpdateTotalCount(int val)
+    {
+        TotalCount = val;
+    }
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        base.OnAfterRender(firstRender);
+
+        if (firstRender)
+        {
+            
+        }
     }
 
 }

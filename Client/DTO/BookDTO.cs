@@ -2,7 +2,7 @@
 {
     public class BookDTO : BaseDTO
     {
-        public bool IsAvaiable { get; set; }
+        public bool IsAvailable { get; set; }
         public DateTime UpdateTime { get; set; }
     }
 }
