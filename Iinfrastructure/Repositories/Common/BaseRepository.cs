@@ -22,7 +22,7 @@ namespace Iinfrastructure.Repositories.Common
 
         public virtual async Task<ICollection<T>> GetEntitiesByAsync(Expression<Func<T, bool>> predicate)
         {
-            return await _context.Set<T>().Where(predicate).ToListAsync();
+            return await _context.Set<T>().AsNoTracking().Where(predicate).ToListAsync();
         }
 
         public virtual async Task<ICollection<T>> GetAllEntitiesAsync()

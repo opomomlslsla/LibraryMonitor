@@ -17,6 +17,16 @@ namespace API
         {
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("any", policy =>
+                {
+                    policy.AllowAnyHeader()
+                          .AllowAnyMethod()
+                          .AllowAnyOrigin();
+                });
+            });
+
             // Add services to the container.
 
             builder.Services.AddControllers();
@@ -59,6 +69,8 @@ namespace API
             app.MapControllers();
 
             app.MapHub<BooksInfoHub>("/BooksInfoHub");
+
+            app.UseCors("any");
 
             app.Run();
         }

@@ -1,0 +1,43 @@
+﻿@page "/"
+@using Microsoft.AspNetCore.SignalR.Client;
+@inject NavigationManager NavManager;
+@using DTO;
+
+<PageTitle>Home</PageTitle>
+
+<h1> AvailableBooksCount: </h1>
+
+<p> @bebra[0] | @bebra[1] </p>
+<p> @huebra.TotalBooksCount </p>
+
+@foreach(var s in books)
+{
+    <p> @s.Name </p>
+}
+Welcome to your new app.
+
+@code {
+    private HubConnection? hubConnection;
+    private List<int> bebra = new(){0,0};
+    LibraryData huebra = new();
+    List<BookDTO> books = new();
+    protected override async Task OnInitializedAsync()
+    {
+        hubConnection = new HubConnectionBuilder()
+                            .WithUrl("http://localhost:5006/BooksInfoHub")
+                            .WithAutomaticReconnect()
+                            .Build();
+        hubConnection.On<LibraryData>("onRecieveStatistics", (str) =>
+        {
+            bebra[0] = str.TotalBooksCount;
+            huebra = str;
+            books.AddRange(str.Books);
+            Console.WriteLine(str);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
+
+    }
+
+}
