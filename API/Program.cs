@@ -42,7 +42,7 @@ namespace API
             builder.Services.AddSignalR();
             builder.Services.AddScoped<IRepository<Book>, BookRepository>();
             builder.Services.AddScoped<BookService>();
-            builder.Services.AddHostedService<LibraryDataUpdater>();
+            builder.Services.AddSingleton<LibraryDataUpdater>();
 
             builder.Services.AddSwaggerGen(options =>
             {

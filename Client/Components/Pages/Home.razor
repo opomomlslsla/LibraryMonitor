@@ -2,16 +2,33 @@
 @using Microsoft.AspNetCore.SignalR.Client;
 @inject NavigationManager NavManager;
 @using DTO;
+@using static Microsoft.AspNetCore.Components.Web.RenderMode
+@rendermode InteractiveServer
 
 <PageTitle>Home</PageTitle>
 
 <h1> AvailableBooksCount: </h1>
 
-<p> @TotalCount </p>
+<div>
+    <p>Total books: @TotalCount </p>
+    <p>Available books: @AvailableCount </p>
+
+    <h2> Книги </h2>
+    <p> Книга     | Можно забрать    | Дата последнего обновления </p>
+    @foreach(var book in BooksDict.Values)
+    {
+        <p>@book.Name | @Availability[book.IsAvailable] | @book.UpdateTime</p>
+    }
+</div>
+
+
 @code {
     private HubConnection? hubConnection;
-    List<BookDTO> books = new();
+    Dictionary<Guid,BookDTO> BooksDict = new();
     int TotalCount { get; set; }
+    int AvailableCount { get; set; }
+
+    Dictionary<bool, string> Availability = new() { { true, "Доступна" }, { false, "недоступна" } };
 
     protected override async Task OnInitializedAsync()
     {
@@ -19,31 +36,32 @@
                             .WithUrl("http://localhost:5006/BooksInfoHub")
                             .WithAutomaticReconnect()
                             .Build();
-        hubConnection.On<LibraryData>("onRecieveStatistics", (str) =>
-        {
-            books.AddRange(str.Books);
-            Console.WriteLine(str);
-            UpdateTotalCount(str.TotalBooksCount);
-            ShouldRender();
-            InvokeAsync(StateHasChanged);
-        });
+        hubConnection.On<LibraryData>("onRecieveStatistics", DoStuff);
 
         await hubConnection.StartAsync();
+        await hubConnection.InvokeAsync("GetData");
+
     }
 
-    private void UpdateTotalCount(int val)
+    private void UpdateCounters(int total, int available)
     {
-        TotalCount = val;
+        TotalCount = total;
+        AvailableCount = available;
     }
 
-    protected override void OnAfterRender(bool firstRender)
+    private async Task DoStuff(LibraryData data)
     {
-        base.OnAfterRender(firstRender);
-
-        if (firstRender)
+        UpdateCounters(data.TotalBooksCount, data.AvailableBooksCount);
+        foreach(var book in data.Books)
         {
-            
+            if(!BooksDict.Keys.Contains(book.Id))
+            {
+                BooksDict.Add(book.Id, book);
+            }
+            BooksDict[book.Id] = book;
         }
+        Console.WriteLine(data);
+        await InvokeAsync(StateHasChanged);
     }
 
 }

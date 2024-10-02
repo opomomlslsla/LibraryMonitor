@@ -40,7 +40,7 @@ namespace API.Controllers
             return Ok();
         }
 
-        [HttpPost("Update")]
+        [HttpPut("Update")]
         public async Task<IActionResult> Update(BookDTO bookDTO)
         {
             await _service.UpdateAsync(bookDTO);
@@ -53,5 +53,7 @@ namespace API.Controllers
             await _service.DeleteAsync(id);
             return Ok();
         }
+
+
     }
 }
