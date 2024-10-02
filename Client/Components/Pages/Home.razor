@@ -17,7 +17,7 @@
     <p> Книга     | Можно забрать    | Дата последнего обновления </p>
     @foreach(var book in BooksDict.Values)
     {
-        <p>@book.Name | @Availability[book.IsAvailable] | @book.UpdateTime</p>
+        <p>@book.Name | @Availability[book.IsAvailable] | @book.UpdateTime | @book.Id</p>
     }
 </div>
 
