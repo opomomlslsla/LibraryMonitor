@@ -1,8 +1,7 @@
-﻿namespace Client.DTO
+﻿namespace Client.DTO;
+
+public class BaseDTO
 {
-    public class BaseDTO
-    {
-        public Guid Id { get; set; }
-        public string Name { get; set; }
-    }
+    public Guid Id { get; set; }
+    public string Name { get; set; }
 }

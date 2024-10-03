@@ -1,10 +1,10 @@
 ﻿using Domain.Entities.Common;
 using Domain.Interfaces;
-using Iinfrastructure.Data;
+using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
-namespace Iinfrastructure.Repositories.Common
+namespace Infrastructure.Repositories.Common
 {
     public abstract class BaseRepository<T>(LibraryContext context) : IRepository<T> where T : BaseEntity
     {

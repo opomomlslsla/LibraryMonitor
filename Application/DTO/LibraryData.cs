@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Application.DTO
+﻿namespace Application.DTO
 {
     public class LibraryData
     {
         public int AvailableBooksCount { get; set; }
-        public int TotalBooksCount { get; set;}
+        public int TotalBooksCount { get; set; }
         public List<BookDTO> Books { get; set; }
 
     }

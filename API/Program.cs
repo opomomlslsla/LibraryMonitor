@@ -1,78 +1,60 @@
-
 using API.Hubs;
 using API.WorkerServices;
 using Application.Services;
 using Domain.Entities;
 using Domain.Interfaces;
-using Iinfrastructure.Data;
-using Iinfrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Infrastructure.Data;
+using Infrastructure.Repositories;
+namespace API;
 
-namespace API
+public class Program
 {
-    public class Program
+    public static void Main(string[] args)
     {
-        public static void Main(string[] args)
+        var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddCors(options =>
         {
-            var builder = WebApplication.CreateBuilder(args);
-
-            builder.Services.AddCors(options =>
+            options.AddPolicy("any", policy =>
             {
-                options.AddPolicy("any", policy =>
-                {
-                    policy.AllowAnyHeader()
-                          .AllowAnyMethod()
-                          .AllowAnyOrigin();
-                });
+                policy.AllowAnyHeader()
+                      .AllowAnyMethod()
+                      .AllowAnyOrigin();
             });
+        });
 
-            // Add services to the container.
+        builder.Services.AddControllers();
+        builder.Services.AddDbContextFactory<LibraryContext>(options =>
+        {
+            options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
+        });
 
-            builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+        builder.Services.AddSignalR();
+        builder.Services.AddScoped<IRepository<Book>, BookRepository>();
+        builder.Services.AddScoped<BookService>();
+        builder.Services.AddHostedService<LibraryDataUpdater>();
 
-            builder.Services.AddEndpointsApiExplorer();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Some API v1", Version = "v1" });
+            options.AddSignalRSwaggerGen();
+        });
 
-            builder.Services.AddDbContextFactory<LibraryContext>(options =>
-            {
-                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
-            });
+        var app = builder.Build();
 
-            builder.Services.AddSignalR();
-            builder.Services.AddScoped<IRepository<Book>, BookRepository>();
-            builder.Services.AddScoped<BookService>();
-            builder.Services.AddHostedService<LibraryDataUpdater>();
-
-            builder.Services.AddSwaggerGen(options =>
-            {
-                options.SwaggerDoc("v1", new OpenApiInfo { Title = "Some API v1", Version = "v1" });
-                // some other configs
-                options.AddSignalRSwaggerGen();
-            });
-
-            //builder.Services.AddSwaggerGen();
-
-            var app = builder.Build();
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-
-            app.MapControllers();
-
-            app.MapHub<BooksInfoHub>("/BooksInfoHub");
-
-            app.UseCors("any");
-
-            app.Run();
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseSwagger();
+            app.UseSwaggerUI();
         }
+
+        app.UseHttpsRedirection();
+        app.UseAuthorization();
+        app.MapControllers();
+        app.MapHub<BooksInfoHub>("/BooksInfoHub");
+        app.UseCors("any");
+        app.Run();
     }
 }

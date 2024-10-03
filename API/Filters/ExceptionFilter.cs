@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Filters;
+﻿using Domain.Exceptions;
 using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using Domain.Exceptions;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Filters;
