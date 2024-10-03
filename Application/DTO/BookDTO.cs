@@ -1,9 +1,9 @@
-﻿using Application.DTO.Common;
-
-namespace Application.DTO
+﻿namespace Application.DTO
 {
-    public class BookDTO : BaseDTO
+    public class BookDTO
     {
+        public Guid Id { get; set; }
+        public string Name { get; set; }
         public bool IsAvailable { get; set; }
         public DateTime UpdateTime { get; set; }
     }
