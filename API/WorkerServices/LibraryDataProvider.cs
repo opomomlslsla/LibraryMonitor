@@ -10,13 +10,13 @@ using TableDependency.SqlClient.Base.EventArgs;
 
 namespace API.WorkerServices;
 
-public sealed class LibraryDataUpdater : BackgroundService
+public sealed class LibraryDataProvider : BackgroundService
 {
     private readonly IHubContext<BooksInfoHub> _hubContext ;
-    private SqlTableDependency<Book> _sqlDependency;
+    private readonly SqlTableDependency<Book> _sqlDependency;
     private readonly IServiceProvider _serviceProvider;
 
-    public LibraryDataUpdater(IHubContext<BooksInfoHub> hub, IServiceProvider serviceProvider, IConfiguration configuration)
+    public LibraryDataProvider(IHubContext<BooksInfoHub> hub, IServiceProvider serviceProvider, IConfiguration configuration)
     {
         _hubContext = hub;
         _sqlDependency = new(configuration.GetConnectionString("DefaultConnectionString"), "Books");

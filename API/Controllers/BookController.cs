@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace API.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/Books")]
 [ApiController]
 public class BookController(BookService service, IHubContext<BooksInfoHub> context) : ControllerBase
 {
@@ -15,14 +15,14 @@ public class BookController(BookService service, IHubContext<BooksInfoHub> conte
     private readonly BookService _service = service;
 
     [ApiExceptionFilter]
-    [HttpGet("Get/{id}")]
+    [HttpGet("/{id}")]
     public async Task<IActionResult> Get(Guid id)
     {
         return Ok(await _service.GetAsync(id));
     }
 
     [ApiExceptionFilter]
-    [HttpGet("GetByName/{name}")]
+    [HttpGet("/bookname={name}")]
     public async Task<IActionResult> GetByName(string name)
     {
         return Ok(await _service.GetByNameAsync(name));
@@ -30,14 +30,14 @@ public class BookController(BookService service, IHubContext<BooksInfoHub> conte
 
 
     [ApiExceptionFilter]
-    [HttpGet("GetAll")]
+    [HttpGet()]
     public async Task<IActionResult> GetAll()
     {
         return Ok(await _service.GetAllAsync());
     }
 
     [ApiExceptionFilter]
-    [HttpPost("AddBook")]
+    [HttpPost]
     public async Task<IActionResult> Add(BookDTO bookDTO)
     {
         await _service.AddAsync(bookDTO);
@@ -46,15 +46,15 @@ public class BookController(BookService service, IHubContext<BooksInfoHub> conte
 
 
     [ApiExceptionFilter]
-    [HttpPut("Update")]
-    public async Task<IActionResult> Update(BookDTO bookDTO)
+    [HttpPut("/{id}")]
+    public async Task<IActionResult> Update(BookDTO bookDTO, Guid id)
     {
         await _service.UpdateAsync(bookDTO);
         return Ok();
     }
 
     [ApiExceptionFilter]
-    [HttpDelete("delete/{id}")]
+    [HttpDelete("/{id}")]
     public async Task<IActionResult> Delete(Guid id)
     {
         await _service.DeleteAsync(id);
