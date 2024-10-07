@@ -1,14 +1,14 @@
 ﻿@page "/"
+@using Client.Components.SmallComponents
 @using Microsoft.AspNetCore.SignalR.Client;
 @inject NavigationManager NavManager;
 @using DTO;
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>Home</PageTitle>
-
 <h1> AvailableBooksCount: </h1>
-
 <div>
     <p>Total books: @TotalCount </p>
     <p>Available books: @AvailableCount </p>
@@ -17,37 +17,16 @@
     <p> Книга     | Можно забрать    | Дата последнего обновления </p>
     @foreach(var book in BooksDict.Values)
     {
-        <div class="book-info">
-            <h3>@book.Name</h3>
-            <p><strong>Last Updated:</strong> @book.UpdateTime</p>
-            <p><strong>Available:</strong> @(book.IsAvailable ? "Доступна" : "Нет в наличии")</p>
-        </div>
-
-        <style>
-            .book-info {
-                border: 1px solid #ccc;
-                padding: 10px;
-                margin: 10px;
-                border-radius: 5px;
-                width: 600px;
-            }
-
-            h3 {
-                color: #2c3e50;
-            }
-        </style>
+        <BookView Name=@book.Name IsAvailable =@book.IsAvailable UpdateTime=@book.UpdateTime></BookView>
     }
 </div>
 
-
 @code {
     private HubConnection? hubConnection;
+    private readonly HttpClient httpClient = new HttpClient();
     Dictionary<Guid,BookDTO> BooksDict = new();
     int TotalCount { get; set; }
     int AvailableCount { get; set; }
-
-    Dictionary<bool, string> Availability = new() { { true, "Доступна" }, { false, "недоступна" } };
-
     protected override async Task OnInitializedAsync()
     {
         hubConnection = new HubConnectionBuilder()
@@ -57,19 +36,20 @@
         hubConnection.On<LibraryData>("onRecieveStatistics", DoStuff);
 
         await hubConnection.StartAsync();
-        await hubConnection.InvokeAsync("GetData");
+        var books = await httpClient.GetFromJsonAsync<ICollection<BookDTO>>("https://localhost:7141/api/Books");
+        TotalCount = books.Count;
+        AvailableCount = books.Count(x => x.IsAvailable);
+        foreach (var book in books)
+        {
+            BooksDict.Add(book.Id, book);
+        }
 
     }
-
-    private void UpdateCounters(int total, int available)
-    {
-        TotalCount = total;
-        AvailableCount = available;
-    }
-
+    
     private async Task DoStuff(LibraryData data)
     {
-        UpdateCounters(data.TotalBooksCount, data.AvailableBooksCount);
+        TotalCount = data.TotalBooksCount;
+        AvailableCount = data.AvailableBooksCount;
         foreach(var book in data.Books)
         {
             if(!BooksDict.Keys.Contains(book.Id))
@@ -80,6 +60,11 @@
         }
         Console.WriteLine(data);
         await InvokeAsync(StateHasChanged);
+    }
+
+    void IDisposable.Dispose()
+    {
+        httpClient.Dispose();
     }
 
 }

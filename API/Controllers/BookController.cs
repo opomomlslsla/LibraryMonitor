@@ -11,7 +11,6 @@ namespace API.Controllers;
 [ApiController]
 public class BookController(BookService service, IHubContext<BooksInfoHub> context) : ControllerBase
 {
-    private readonly IHubContext<BooksInfoHub> _hubContext = context;
     private readonly BookService _service = service;
 
     [ApiExceptionFilter]

@@ -1,0 +1,30 @@
+﻿@code {
+    [Parameter]
+    public string Name { get; set; }
+
+    [Parameter]
+    public DateTime UpdateTime { get; set; }
+
+    [Parameter]
+    public bool IsAvailable { get; set; }
+}
+
+<div class="book-info">
+    <h3>@Name</h3>
+    <p><strong>Last Updated:</strong> @UpdateTime)</p>
+    <p><strong>IsAvailable:</strong> @(IsAvailable ? "Доступна" : "Нет в наличии")</p>
+</div>
+
+<style>
+    .book-info {
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin: 10px;
+        border-radius: 5px;
+        width: 600px;
+    }
+
+    h3 {
+        color: #2c3e50;
+    }
+</style>
