@@ -5,7 +5,7 @@
 @using DTO;
 @using static Microsoft.AspNetCore.Components.Web.RenderMode
 @rendermode InteractiveServer
-@implements IDisposable
+@implements IAsyncDisposable
 
 <PageTitle>Home</PageTitle>
 <h1> Количество доступных книг: </h1>
@@ -45,7 +45,7 @@
         }
 
     }
-    
+
     private async Task DoStuff(LibraryData data)
     {
         TotalCount = data.TotalBooksCount;
@@ -62,9 +62,13 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    void IDisposable.Dispose()
+    public async ValueTask DisposeAsync()
     {
         httpClient.Dispose();
+        if (hubConnection != null)
+        {
+            await hubConnection.DisposeAsync();
+        }
     }
 
 }
