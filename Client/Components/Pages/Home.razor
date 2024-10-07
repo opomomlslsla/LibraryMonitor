@@ -17,7 +17,25 @@
     <p> Книга     | Можно забрать    | Дата последнего обновления </p>
     @foreach(var book in BooksDict.Values)
     {
-        <p>@book.Name | @Availability[book.IsAvailable] | @book.UpdateTime</p>
+        <div class="book-info">
+            <h3>@book.Name</h3>
+            <p><strong>Last Updated:</strong> @book.UpdateTime</p>
+            <p><strong>Available:</strong> @(book.IsAvailable ? "Доступна" : "Нет в наличии")</p>
+        </div>
+
+        <style>
+            .book-info {
+                border: 1px solid #ccc;
+                padding: 10px;
+                margin: 10px;
+                border-radius: 5px;
+                width: 600px;
+            }
+
+            h3 {
+                color: #2c3e50;
+            }
+        </style>
     }
 </div>
 
