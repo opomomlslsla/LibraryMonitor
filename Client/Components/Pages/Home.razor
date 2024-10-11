@@ -17,7 +17,7 @@
     <p> Книга     | Можно забрать    | Дата последнего обновления </p>
     @foreach(var book in BooksDict.Values)
     {
-        <BookView Name=@book.Name IsAvailable =@book.IsAvailable UpdateTime=@book.UpdateTime></BookView>
+        <BookView Book=@book></BookView>
     }
 </div>
 

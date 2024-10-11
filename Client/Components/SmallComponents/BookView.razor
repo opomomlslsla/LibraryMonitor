@@ -1,18 +1,14 @@
-﻿@code {
+﻿@using Client.DTO
+@code {
     [Parameter]
-    public string Name { get; set; }
+    public BookDTO Book { get; set; }
 
-    [Parameter]
-    public DateTime UpdateTime { get; set; }
-
-    [Parameter]
-    public bool IsAvailable { get; set; }
 }
 
 <div class="book-info">
-    <h3>@Name</h3>
-    <p><strong>Дата обновления: </strong> @UpdateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
-    <p><strong></strong> @(IsAvailable ? "Доступна" : "Нет в наличии")</p>
+    <h3>@Book.Name</h3>
+    <p><strong>Дата обновления: </strong> @Book.UpdateTime.ToString("MM/dd/yyyy HH:mm:ss")</p>
+    <p><strong></strong> @(Book.IsAvailable ? "Доступна" : "Нет в наличии")</p>
 </div>
 
 <style>
