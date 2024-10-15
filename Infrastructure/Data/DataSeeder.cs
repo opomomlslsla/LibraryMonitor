@@ -1,27 +1,15 @@
 ﻿using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
+using Microsoft.Extensions.DependencyInjection;
 namespace Infrastructure.Data
 {
-    public class DataSeeder(LibraryContext context)
+    public class DataSeeder()
     {
-        private readonly LibraryContext _libraryContext = context;
-
-        public void Seed() 
-        {
-            SeedBooks();
-        }
-
-        public void SeedBooks() 
+        public static void SeedBooks(LibraryContext context) 
         {
             var date = new DateOnly(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            if (!_libraryContext.Books.Any())
+            if (context != null && !context.Books.Any())
             {
-                _libraryContext.Books.AddRange(new List<Book>()
+                context.Books.AddRange(new List<Book>()
                 {
                 new Book()
                 {
@@ -100,6 +88,7 @@ namespace Infrastructure.Data
                     UpdateTime = DateTime.Now
                 },
                 });
+                context.SaveChanges();
             }
         }
 

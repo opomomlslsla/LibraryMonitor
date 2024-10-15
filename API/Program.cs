@@ -20,7 +20,7 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddControllers();
-builder.Services.AddDbContextFactory<LibraryContext>(options =>
+builder.Services.AddDbContext<LibraryContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString"));
 });
@@ -37,6 +37,12 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    DataSeeder.SeedBooks(scope.ServiceProvider.GetService<LibraryContext>());
+}
+
 
 if (app.Environment.IsDevelopment())
 {
